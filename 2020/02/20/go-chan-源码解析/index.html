@@ -79,14 +79,14 @@
 
 
 
-<meta name="description" content="go chan 源码解析 go 源码服务器环境 chan 数据结构解析 makechan chansend chanrevgo 源码服务器环境    服务器: 阿里云的最低配的服务器  go version: go1.12.16  系统: centos7 linux&#x2F;amd64   chan 数据结构解析  chan 在go 源码中的数据结构是hchan ,其定义如下 type hchan st">
+<meta name="description" content="go 源码服务器环境 chan 数据结构解析 makechan chansend chanrevgo 源码服务器环境    服务器: 阿里云的最低配的服务器  go version: go1.12.16  系统: centos7 linux&#x2F;amd64   chan 数据结构解析  chan 在go 源码中的数据结构是hchan ,其定义如下 type hchan struct {     qc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go_chan_源码解析">
 <meta property="og:url" content="http://yoursite.com/2020/02/20/go-chan-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="tygzx 的博客">
-<meta property="og:description" content="go chan 源码解析 go 源码服务器环境 chan 数据结构解析 makechan chansend chanrevgo 源码服务器环境    服务器: 阿里云的最低配的服务器  go version: go1.12.16  系统: centos7 linux&#x2F;amd64   chan 数据结构解析  chan 在go 源码中的数据结构是hchan ,其定义如下 type hchan st">
+<meta property="og:description" content="go 源码服务器环境 chan 数据结构解析 makechan chansend chanrevgo 源码服务器环境    服务器: 阿里云的最低配的服务器  go version: go1.12.16  系统: centos7 linux&#x2F;amd64   chan 数据结构解析  chan 在go 源码中的数据结构是hchan ,其定义如下 type hchan struct {     qc">
 <meta property="article:published_time" content="2020-02-20T04:27:25.000Z">
-<meta property="article:modified_time" content="2020-02-20T04:32:23.841Z">
+<meta property="article:modified_time" content="2020-02-20T05:03:03.629Z">
 <meta property="article:author" content="tygzx">
 <meta name="twitter:card" content="summary">
 
@@ -311,6 +311,39 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url" rel="index">
+                    <span itemprop="name">源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -338,7 +371,7 @@
       
 
       
-        <h1 id="go-chan-源码解析"><a href="#go-chan-源码解析" class="headerlink" title=" go chan 源码解析"></a><center> go chan 源码解析</center></h1><ul>
+        <ul>
 <li><a href="#1">go 源码服务器环境</a></li>
 <li><a href="#2">chan 数据结构解析</a></li>
 <li><a href="#3">makechan</a></li>
@@ -578,6 +611,15 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
 
             
 
@@ -608,7 +650,7 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#go-chan-源码解析"><span class="nav-number">1.</span> <span class="nav-text"> go chan 源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1"><span class="nav-number">1.0.1.</span> <span class="nav-text">go 源码服务器环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2"><span class="nav-number">1.0.2.</span> <span class="nav-text">chan 数据结构解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3"><span class="nav-number">1.0.3.</span> <span class="nav-text">makechan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4"><span class="nav-number">1.0.4.</span> <span class="nav-text">chansend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5"><span class="nav-number">1.0.5.</span> <span class="nav-text">chanrev</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1"><span class="nav-number">1.</span> <span class="nav-text">go 源码服务器环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2"><span class="nav-number">2.</span> <span class="nav-text">chan 数据结构解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3"><span class="nav-number">3.</span> <span class="nav-text">makechan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4"><span class="nav-number">4.</span> <span class="nav-text">chansend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5"><span class="nav-number">5.</span> <span class="nav-text">chanrev</span></a></li></ol></div>
             
 
           </div>
