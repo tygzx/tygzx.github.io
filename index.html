@@ -250,6 +250,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/06/golang-%E5%8F%AF%E6%AF%94%E8%BE%83%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tygzx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://img2.imgtn.bdimg.com/it/u=2129938840,5545132&fm=26&gp=0.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tygzx 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/06/golang-%E5%8F%AF%E6%AF%94%E8%BE%83%E7%B1%BB%E5%9E%8B/" itemprop="url">golang 可比较类型</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-06T14:13:53+08:00">
+                2020-03-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <pre><code>The equality operators == and != apply to operands that are comparable. The ordering operators &lt;, &lt;=, &gt;, and &gt;= apply to operands that are ordered. These terms and the result of the comparisons are defined as follows:
+
+Boolean values are comparable. Two boolean values are equal if they are either both true or both false.
+Integer values are comparable and ordered, in the usual way.
+Floating-point values are comparable and ordered, as defined by the IEEE-754 standard.
+Complex values are comparable. Two complex values u and v are equal if both real(u) == real(v) and imag(u) == imag(v).
+String values are comparable and ordered, lexically byte-wise.
+Pointer values are comparable. Two pointer values are equal if they point to the same variable or if both have value nil. Pointers to distinct zero-size variables may or may not be equal.
+Channel values are comparable. Two channel values are equal if they were created by the same call to make or if both have value nil.
+Interface values are comparable. Two interface values are equal if they have identical dynamic types and equal dynamic values or if both have value nil.
+A value x of non-interface type X and a value t of interface type T are comparable when values of type X are comparable and X implements T. They are equal if t&apos;s dynamic type is identical to X and t&apos;s dynamic value is equal to x.
+Struct values are comparable if all their fields are comparable. Two struct values are equal if their corresponding non-blank fields are equal.
+Array values are comparable if values of the array element type are comparable. Two array values are equal if their corresponding elements are equal.</code></pre><p>由上面可以看出以下几个基本类型是可比较类型的</p>
+<ul>
+<li>Boolean</li>
+<li>Integer</li>
+<li>Floating-point </li>
+<li>Complex</li>
+<li>String</li>
+<li>Channel</li>
+<li>Interface</li>
+<li>Struct</li>
+<li>Array(数组元素可以比较的话，那么就可以比较)</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><div id="refer-anchor-1"></div>
+
+<ul>
+<li>[1] <a href="https://golang.org/ref/spec#Comparison_operators" target="_blank" rel="noopener">go文档</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/05/go-context-%E4%B8%80%E7%82%B9%E6%BA%90%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -904,7 +1052,7 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -926,7 +1074,7 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
