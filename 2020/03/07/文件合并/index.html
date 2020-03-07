@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="go 文档," />
+  <meta name="keywords" content="随手记," />
 
 
 
@@ -79,16 +79,16 @@
 
 
 
-<meta name="description" content="The equality operators &#x3D;&#x3D; and !&#x3D; apply to operands that are comparable. The ordering operators &lt;, &lt;&#x3D;, &gt;, and &gt;&#x3D; apply to operands that are ordered. These terms and the result of the compar">
+<meta name="description" content="最近碰到如下的一个问题  如何快速合并两个大文件？ 有A,B两个文件。这两个文件都有以下特性  A,B两个文件每一行都可以被解析为json 格式  A,B两个文件都比较大(至少大于500M)  A,B两个文件可以通过将每行转化为json之后通过某个相同key的值合并  A文件有a行,B文件有b行  A,B两个文件两行可以合并的条件是唯一的。  比如 A文件的第一行可以是这样的一个json  { ​">
 <meta property="og:type" content="article">
-<meta property="og:title" content="golang 可比较类型">
-<meta property="og:url" content="http://yoursite.com/2020/03/06/golang-%E5%8F%AF%E6%AF%94%E8%BE%83%E7%B1%BB%E5%9E%8B/index.html">
+<meta property="og:title" content="文件合并">
+<meta property="og:url" content="http://yoursite.com/2020/03/07/%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/index.html">
 <meta property="og:site_name" content="tygzx 的博客">
-<meta property="og:description" content="The equality operators &#x3D;&#x3D; and !&#x3D; apply to operands that are comparable. The ordering operators &lt;, &lt;&#x3D;, &gt;, and &gt;&#x3D; apply to operands that are ordered. These terms and the result of the compar">
-<meta property="article:published_time" content="2020-03-06T06:13:53.000Z">
-<meta property="article:modified_time" content="2020-03-06T06:14:35.468Z">
+<meta property="og:description" content="最近碰到如下的一个问题  如何快速合并两个大文件？ 有A,B两个文件。这两个文件都有以下特性  A,B两个文件每一行都可以被解析为json 格式  A,B两个文件都比较大(至少大于500M)  A,B两个文件可以通过将每行转化为json之后通过某个相同key的值合并  A文件有a行,B文件有b行  A,B两个文件两行可以合并的条件是唯一的。  比如 A文件的第一行可以是这样的一个json  { ​">
+<meta property="article:published_time" content="2020-03-07T04:41:01.000Z">
+<meta property="article:modified_time" content="2020-03-07T04:41:34.097Z">
 <meta property="article:author" content="tygzx">
-<meta property="article:tag" content="go 文档">
+<meta property="article:tag" content="随手记">
 <meta name="twitter:card" content="summary">
 
 
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/03/06/golang-可比较类型/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/03/07/文件合并/"/>
 
 
 
 
 
-  <title>golang 可比较类型 | tygzx 的博客</title>
+  <title>文件合并 | tygzx 的博客</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/06/golang-%E5%8F%AF%E6%AF%94%E8%BE%83%E7%B1%BB%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/07/%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="tygzx">
@@ -269,7 +269,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">golang 可比较类型</h2>
+          <h2 class="post-title" itemprop="name headline">文件合并</h2>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-06T14:13:53+08:00">
-                2020-03-06
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-07T12:41:01+08:00">
+                2020-03-07
               </time>
             
 
@@ -319,35 +319,61 @@
       
 
       
-        <pre><code>The equality operators == and != apply to operands that are comparable. The ordering operators &lt;, &lt;=, &gt;, and &gt;= apply to operands that are ordered. These terms and the result of the comparisons are defined as follows:
+        <p>最近碰到如下的一个问题  如何快速合并两个大文件？</p>
+<p>有A,B两个文件。这两个文件都有以下特性</p>
+<ol>
+<li><p>A,B两个文件每一行都可以被解析为json 格式</p>
+</li>
+<li><p>A,B两个文件都比较大(至少大于500M)</p>
+</li>
+<li><p>A,B两个文件可以通过将每行转化为json之后通过某个相同key的值合并</p>
+</li>
+<li><p>A文件有a行,B文件有b行</p>
+</li>
+<li><p>A,B两个文件两行可以合并的条件是唯一的。</p>
+<blockquote>
+<p>比如 A文件的第一行可以是这样的一个json </p>
+<p>{</p>
+<p>​    ‘id’:1,</p>
+<p>​    ‘test’: 2</p>
+<p>}</p>
+<p>B文件的第二行可以是这样的一个json</p>
+<p>{</p>
+<p>  ‘id’:1,</p>
+<p>  ‘test2’:3</p>
+<p>}</p>
+<p>我们可以通过两个相同的key合并为这样一个json</p>
+<p>{</p>
+<p>  ‘id’:1,</p>
+<p>  ‘test’:2,</p>
+<p>  ‘test2’:3</p>
+<p>}</p>
+</blockquote>
+</li>
+</ol>
+<p>现在的问题就是如何把他们合并？</p>
+<p>第一个想法——暴力合并</p>
+<ol>
+<li>先读取A文件的一行数据，然后转化为json格式</li>
+<li>将A某一行的json格式的数据同B文件中的数据一一校验，判断两个数据数据是否可以合并</li>
+</ol>
+<p>​        </p>
+<p>这个想法的算法复杂度是o(a*b)，当文件的行数很大的时候，情况很堪忧。以我目前的处理的两个文件来说，两个文件都是9万多行。对于cpu来说，他最坏的时候需要90000 * 90000次指令。目前的cpu每秒大概能执行百万级的指令，那么执行这个合并操作也需要2个小时的时间</p>
+<p>第二个方法-先预处理一下</p>
+<p>我们可以先算出A文件中哪一行数据可以同B文件中哪几行的文件。因为合并的条件是唯一的。那么对于我们现在的处理的文件来说是算法复杂度为o(max(a,b))</p>
+<p>但是这个算法还是有一个问题，当你已经知道两个文件哪俩行的文件需要合并的。你如何从这两个大文件中快速的读出这两行文件。</p>
+<p>我目前的想法是记录每一行的偏移量的位置。</p>
+<p>记录偏移量的话我刚开始是想采用以下代码的方法的。直接把文件中的数据读到内存中</p>
+<p>执行以下代码,276M 需要2秒,17G 需要10秒</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_merge</span><span class="params">(filename)</span>:</span></span><br><span class="line">    start_time = time.time()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"start &#123;&#125; function is &#123;&#125;"</span>.format(test_merge.__name__, start_time)</span><br><span class="line">    </span><br><span class="line">    f = open(filename, <span class="string">"r"</span>)</span><br><span class="line">    line = []</span><br><span class="line">    line.append(<span class="number">0</span>)</span><br><span class="line">    filename_size = os.path.getsize(filename)</span><br><span class="line">    chars = f.read(filename_size)</span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> chars:</span><br><span class="line">        <span class="keyword">if</span> char == <span class="string">'\n'</span>:</span><br><span class="line">            line.append(count)</span><br><span class="line">        count = count + <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-Boolean values are comparable. Two boolean values are equal if they are either both true or both false.
-Integer values are comparable and ordered, in the usual way.
-Floating-point values are comparable and ordered, as defined by the IEEE-754 standard.
-Complex values are comparable. Two complex values u and v are equal if both real(u) == real(v) and imag(u) == imag(v).
-String values are comparable and ordered, lexically byte-wise.
-Pointer values are comparable. Two pointer values are equal if they point to the same variable or if both have value nil. Pointers to distinct zero-size variables may or may not be equal.
-Channel values are comparable. Two channel values are equal if they were created by the same call to make or if both have value nil.
-Interface values are comparable. Two interface values are equal if they have identical dynamic types and equal dynamic values or if both have value nil.
-A value x of non-interface type X and a value t of interface type T are comparable when values of type X are comparable and X implements T. They are equal if t&apos;s dynamic type is identical to X and t&apos;s dynamic value is equal to x.
-Struct values are comparable if all their fields are comparable. Two struct values are equal if their corresponding non-blank fields are equal.
-Array values are comparable if values of the array element type are comparable. Two array values are equal if their corresponding elements are equal.</code></pre><p>由上面可以看出以下几个基本类型是可比较类型的</p>
-<ul>
-<li>Boolean</li>
-<li>Integer</li>
-<li>Floating-point </li>
-<li>Complex</li>
-<li>String</li>
-<li>Channel</li>
-<li>Interface</li>
-<li>Struct</li>
-<li>Array(数组元素可以比较的话，那么就可以比较)</li>
-</ul>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><div id="refer-anchor-1"></div>
+<p>但是上面的代码在当文件很大的时候是很容易爆内存的.</p>
+<p>所以在此我们可以采用第二个函数可以通过，先计算出每个文件的大小，然后每个读出根号大小的数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge_by_file</span><span class="params">(filename)</span>:</span></span><br><span class="line">    start_time = time.time()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"start &#123;&#125; function is &#123;&#125;"</span>.format(merge_by_file.__name__,start_time)</span><br><span class="line">    </span><br><span class="line">    f = open(filename, <span class="string">"r"</span>)</span><br><span class="line">    line = []</span><br><span class="line">    line.append(<span class="number">0</span>)</span><br><span class="line">    filename_size = os.path.getsize(filename)</span><br><span class="line">    filename_length = int(math.sqrt(filename_size))</span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">print</span> filename_length</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(filename_length + <span class="number">2</span>):</span><br><span class="line">        <span class="keyword">if</span> count + filename_length &lt; filename_size:</span><br><span class="line">            chars = f.read(filename_length)</span><br><span class="line">            <span class="keyword">for</span> char <span class="keyword">in</span> chars:</span><br><span class="line">                count = count + <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">'\n'</span>:</span><br><span class="line">                    line.append(count)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            chars = f.read(filename_size - count)</span><br><span class="line">            <span class="keyword">for</span> char <span class="keyword">in</span> chars:</span><br><span class="line">                count = count + <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> char == <span class="string">'\n'</span> <span class="keyword">and</span> count != filename_size:</span><br><span class="line">                    line.append(count)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    f.close()</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>[1] <a href="https://golang.org/ref/spec#Comparison_operators" target="_blank" rel="noopener">go文档</a></li>
-</ul>
+
+
+<p>由此，我在处理两个9万行文件的脚本每次运行的时间缩短到2分钟。</p>
 
       
     </div>
@@ -365,7 +391,7 @@ Array values are comparable if values of the array element type are comparable. 
       
         <div class="post-tags">
           
-            <a href="/tags/go-%E6%96%87%E6%A1%A3/" rel="tag"># go 文档</a>
+            <a href="/tags/%E9%9A%8F%E6%89%8B%E8%AE%B0/" rel="tag"># 随手记</a>
           
         </div>
       
@@ -378,8 +404,8 @@ Array values are comparable if values of the array element type are comparable. 
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/03/05/go-context-%E4%B8%80%E7%82%B9%E6%BA%90%E7%A0%81/" rel="next" title="go context 一点源码">
-                <i class="fa fa-chevron-left"></i> go context 一点源码
+              <a href="/2020/03/07/%E6%8E%A2%E5%AF%BBpythin-%E4%B8%ADint-%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84%E4%B8%80%E7%82%B9%E5%B0%8F%E6%9B%B2%E6%8A%98/" rel="next" title="探寻pythin 中int 函数中的一点小曲折">
+                <i class="fa fa-chevron-left"></i> 探寻pythin 中int 函数中的一点小曲折
               </a>
             
           </div>
@@ -387,10 +413,6 @@ Array values are comparable if values of the array element type are comparable. 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/03/07/git-hook-%E6%80%BB%E7%BB%93/" rel="prev" title="git hook 总结">
-                git hook 总结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -442,17 +464,8 @@ Array values are comparable if values of the array element type are comparable. 
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -516,22 +529,6 @@ Array values are comparable if values of the array element type are comparable. 
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
