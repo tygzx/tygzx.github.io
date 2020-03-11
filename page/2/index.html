@@ -250,6 +250,130 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/22/go-%E4%B8%AD-make-%E5%92%8C-new-%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8C%BA%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tygzx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://img2.imgtn.bdimg.com/it/u=2129938840,5545132&fm=26&gp=0.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tygzx 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/22/go-%E4%B8%AD-make-%E5%92%8C-new-%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8C%BA%E5%88%AB/" itemprop="url">go 中 make 和 new 的一些区别</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-22T20:56:23+08:00">
+                2020-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>make:</p>
+<pre><code>这是是官方的源码上的注释文本,从上可以看出make 函数只能用于slice,map,和chan 数据结构的创建
+
+The make built-in function allocates and initializes an object of typeslice, map, or chan (only). Like new, the first argument is a type, not avalue. </code></pre><p>new:</p>
+<pre><code>这是new 函数的
+The new built-in function allocates memory. The first argument is a type,not a value, and the value returned is a pointer to a newlyallocated zero value of that type.</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/20/go-chan-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -579,7 +703,7 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
