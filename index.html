@@ -250,6 +250,290 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/11/insert-command-%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tygzx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://img2.imgtn.bdimg.com/it/u=2129938840,5545132&fm=26&gp=0.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tygzx 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/11/insert-command-%E6%B5%81%E7%A8%8B%E6%8E%A2%E7%A9%B6/" itemprop="url">insert command 流程探究</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-11T10:47:27+08:00">
+                2020-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ul>
+<li><p><a href="#0">要探究的command</a></p>
+</li>
+<li><p><a href="#1">redis 版本</a></p>
+</li>
+<li><p><a href="#2">insert command 调用堆栈</a></p>
+</li>
+<li><p><a href="#3">inster command 流程图</a></p>
+</li>
+<li><p><a href="#4">client 数据结构</a></p>
+</li>
+<li><p><a href="#5">insert command code</a></p>
+<h3 id="0">要探究的command</h3>
+
+<p> LINSERT run before “redis” “redis1”</p>
+<h3 id="1">redis 版本</h3>
+
+<p> redis5.0 stable</p>
+<h3 id="2">insert command 调用堆栈</h3>
+</li>
+</ul>
+<ul>
+<li>linsertCommand (src/t_list.c:269)<br></li>
+<li>call (src/server.c:2468)<br></li>
+<li>processCommand (src/server.c:2763)<br></li>
+<li>processInputBuffer (src/networking.c:1466)<br></li>
+<li>processInputBufferAndReplicate (src/networking.c:1501)<br></li>
+<li>readQueryFromClient (src/networking.c:1583)<br></li>
+<li>aeProcessEvents (src/ae.c:443)<br></li>
+<li>aeMain (src/ae.c:501)<br></li>
+<li>main (src/server.c:4235)<br></li>
+</ul>
+<h3 id="3">inster command 流程图</h3>
+
+<p> <img src="https://upload-images.jianshu.io/upload_images/1250148-c97df494e2dc7bc3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Untitled Diagram.png"></p>
+<h3 id="4">client 数据结构</h3>
+这里只介绍几个和我们执行这几个命令比较相关的字段
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">client</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint64_t</span> id;            <span class="comment">/* Client incremental unique ID. */</span></span><br><span class="line">    <span class="keyword">int</span> fd;    <span class="comment">//文件描述符,主要是将返回的结果返回给界面             /* Client socket. </span></span><br><span class="line">    redisDb *db;            <span class="comment">/* Pointer to currently SELECTed DB. */</span></span><br><span class="line">    robj *name;             <span class="comment">/* As set by CLIENT SETNAME. */</span></span><br><span class="line">    sds querybuf;           <span class="comment">/* Buffer we use to accumulate client queries. */</span></span><br><span class="line">    <span class="keyword">size_t</span> qb_pos;          <span class="comment">/* The position we have read in querybuf. */</span></span><br><span class="line">    sds pending_querybuf;   <span class="comment">/* If this client is flagged as master, this buffer</span></span><br><span class="line"><span class="comment">                               represents the yet not applied portion of the</span></span><br><span class="line"><span class="comment">                               replication stream that we are receiving from</span></span><br><span class="line"><span class="comment">                               the master. */</span></span><br><span class="line">    <span class="keyword">size_t</span> querybuf_peak;   <span class="comment">/* Recent (100ms or more) peak of querybuf size. */</span></span><br><span class="line">    <span class="keyword">int</span> argc;               <span class="comment">/* Num of arguments of current command. */</span></span><br><span class="line">    robj **argv;            <span class="comment">/* Arguments of current command. */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> *<span class="title">cmd</span>, *<span class="title">lastcmd</span>;</span>  <span class="comment">/* Last command executed. */</span></span><br><span class="line">    <span class="keyword">int</span> reqtype;            <span class="comment">/* Request protocol type: PROTO_REQ_* */</span></span><br><span class="line">    <span class="keyword">int</span> multibulklen;       <span class="comment">/* Number of multi bulk arguments left to read. */</span></span><br><span class="line">    <span class="keyword">long</span> bulklen;           <span class="comment">/* Length of bulk argument in multi bulk request. */</span></span><br><span class="line">    <span class="built_in">list</span> *reply;            <span class="comment">/* List of reply objects to send to the client. */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> reply_bytes; <span class="comment">/* Tot bytes of objects in reply list. */</span></span><br><span class="line">    <span class="keyword">size_t</span> sentlen;         <span class="comment">/* Amount of bytes already sent in the current</span></span><br><span class="line"><span class="comment">                               buffer or object being sent. */</span></span><br><span class="line">    <span class="keyword">time_t</span> ctime;           <span class="comment">/* Client creation time. */</span></span><br><span class="line">    <span class="keyword">time_t</span> lastinteraction; <span class="comment">/* Time of the last interaction, used for timeout */</span></span><br><span class="line">    <span class="keyword">time_t</span> obuf_soft_limit_reached_time;</span><br><span class="line">    <span class="keyword">int</span> flags;              <span class="comment">/* Client flags: CLIENT_* macros. */</span></span><br><span class="line">    <span class="keyword">int</span> authenticated;      <span class="comment">/* When requirepass is non-NULL. */</span></span><br><span class="line">    <span class="keyword">int</span> replstate;          <span class="comment">/* Replication state if this is a slave. */</span></span><br><span class="line">    <span class="keyword">int</span> repl_put_online_on_ack; <span class="comment">/* Install slave write handler on first ACK. */</span></span><br><span class="line">    <span class="keyword">int</span> repldbfd;           <span class="comment">/* Replication DB file descriptor. */</span></span><br><span class="line">    <span class="keyword">off_t</span> repldboff;        <span class="comment">/* Replication DB file offset. */</span></span><br><span class="line">    <span class="keyword">off_t</span> repldbsize;       <span class="comment">/* Replication DB file size. */</span></span><br><span class="line">    sds replpreamble;       <span class="comment">/* Replication DB preamble. */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> read_reploff; <span class="comment">/* Read replication offset if this is a master. */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> reploff;      <span class="comment">/* Applied replication offset if this is a master. */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> repl_ack_off; <span class="comment">/* Replication ack offset, if this is a slave. */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> repl_ack_time;<span class="comment">/* Replication ack time, if this is a slave. */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> psync_initial_offset; <span class="comment">/* FULLRESYNC reply offset other slaves</span></span><br><span class="line"><span class="comment">                                       copying this slave output buffer</span></span><br><span class="line"><span class="comment">                                       should use. */</span></span><br><span class="line">    <span class="keyword">char</span> replid[CONFIG_RUN_ID_SIZE+<span class="number">1</span>]; <span class="comment">/* Master replication ID (if master). */</span></span><br><span class="line">    <span class="keyword">int</span> slave_listening_port; <span class="comment">/* As configured with: SLAVECONF listening-port */</span></span><br><span class="line">    <span class="keyword">char</span> slave_ip[NET_IP_STR_LEN]; <span class="comment">/* Optionally given by REPLCONF ip-address */</span></span><br><span class="line">    <span class="keyword">int</span> slave_capa;         <span class="comment">/* Slave capabilities: SLAVE_CAPA_* bitwise OR. */</span></span><br><span class="line">    multiState mstate;      <span class="comment">/* MULTI/EXEC state */</span></span><br><span class="line">    <span class="keyword">int</span> btype;              <span class="comment">/* Type of blocking op if CLIENT_BLOCKED. */</span></span><br><span class="line">    blockingState bpop;     <span class="comment">/* blocking state */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> woff;         <span class="comment">/* Last write global replication offset. */</span></span><br><span class="line">    <span class="built_in">list</span> *watched_keys;     <span class="comment">/* Keys WATCHED for MULTI/EXEC CAS */</span></span><br><span class="line">    dict *pubsub_channels;  <span class="comment">/* channels a client is interested in (SUBSCRIBE) */</span></span><br><span class="line">    <span class="built_in">list</span> *pubsub_patterns;  <span class="comment">/* patterns a client is interested in (SUBSCRIBE) */</span></span><br><span class="line">    sds peerid;             <span class="comment">/* Cached peer ID. */</span></span><br><span class="line">    listNode *client_list_node; <span class="comment">/* list node in client list */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Response buffer */</span></span><br><span class="line">    <span class="keyword">int</span> bufpos;</span><br><span class="line">    <span class="comment">// 返回的结果最终会写在buf数组里</span></span><br><span class="line">    <span class="keyword">char</span> buf[PROTO_REPLY_CHUNK_BYTES];</span><br><span class="line">&#125; client;</span><br></pre></td></tr></table></figure>
+<h3 id="5">insert command code</h3>
+    下面是执行这个command
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">linsertCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> where;</span><br><span class="line">    robj *subject;</span><br><span class="line">    listTypeIterator *iter;</span><br><span class="line">    listTypeEntry entry;</span><br><span class="line">    <span class="keyword">int</span> inserted = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 这里主要是解析参数</span></span><br><span class="line">    <span class="keyword">if</span> (strcasecmp(c-&gt;argv[<span class="number">2</span>]-&gt;ptr,<span class="string">"after"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        where = LIST_TAIL;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcasecmp(c-&gt;argv[<span class="number">2</span>]-&gt;ptr,<span class="string">"before"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">        where = LIST_HEAD;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        addReply(c,shared.syntaxerr);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((subject = lookupKeyWriteOrReply(c,c-&gt;argv[<span class="number">1</span>],shared.czero)) == <span class="literal">NULL</span> ||</span><br><span class="line">        checkType(c,subject,OBJ_LIST)) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Seek pivot from head to tail */</span></span><br><span class="line">    <span class="comment">// 从这里可以看出来这个是查找就是从头查找到尾的,时间复杂度为o(N)</span></span><br><span class="line">    iter = listTypeInitIterator(subject,<span class="number">0</span>,LIST_TAIL);</span><br><span class="line">    <span class="keyword">while</span> (listTypeNext(iter,&amp;entry)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (listTypeEqual(&amp;entry,c-&gt;argv[<span class="number">3</span>])) &#123;</span><br><span class="line">            listTypeInsert(&amp;entry,c-&gt;argv[<span class="number">4</span>],where);</span><br><span class="line">            inserted = <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取链表的迭代器</span></span><br><span class="line">    listTypeReleaseIterator(iter);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (inserted) &#123;</span><br><span class="line">        signalModifiedKey(c-&gt;db,c-&gt;argv[<span class="number">1</span>]);</span><br><span class="line">        notifyKeyspaceEvent(NOTIFY_LIST,<span class="string">"linsert"</span>,</span><br><span class="line">                            c-&gt;argv[<span class="number">1</span>],c-&gt;db-&gt;id);</span><br><span class="line">        server.dirty++;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">/* Notify client of a failed insert */</span></span><br><span class="line">        addReply(c,shared.cnegone);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这里是将插入后的结果写入到c-&gt;buf中</span></span><br><span class="line">    addReplyLongLong(c,listTypeLength(subject));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/11/%E8%A6%81%E6%8E%A2%E7%A9%B6%E7%9A%84command-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tygzx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://img2.imgtn.bdimg.com/it/u=2129938840,5545132&fm=26&gp=0.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="tygzx 的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/11/%E8%A6%81%E6%8E%A2%E7%A9%B6%E7%9A%84command-0/" itemprop="url"> * [要探究的command](#0)</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-11T10:46:49+08:00">
+                2020-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/07/%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1379,297 +1663,13 @@ The new built-in function allocates memory. The first argument is a type,not a v
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/20/go-chan-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="tygzx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://img2.imgtn.bdimg.com/it/u=2129938840,5545132&fm=26&gp=0.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="tygzx 的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/02/20/go-chan-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url">go_chan_源码解析</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-20T12:27:25+08:00">
-                2020-02-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url" rel="index">
-                    <span itemprop="name">源码解析</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><a href="#1">go 源码服务器环境</a></li>
-<li><a href="#2">chan 数据结构解析</a></li>
-<li><a href="#3">makechan</a></li>
-<li><a href="#4">chansend</a></li>
-<li><a href="#5">chanrev</a><h3 id="1">go 源码服务器环境</h3>
-</li>
-</ul>
-<ul>
-<li><p>服务器: 阿里云的最低配的服务器</p>
-</li>
-<li><p>go version: go1.12.16</p>
-</li>
-<li><p>系统: centos7 linux/amd64</p>
-</li>
-</ul>
-<h3 id="2">chan 数据结构解析</h3>
-
-<p>chan 在go 源码中的数据结构是hchan ,其定义如下</p>
-<pre><code>type hchan struct {
-    qcount   uint           // 队列中数据的个数
-    dataqsiz uint           // 队列中能容纳的数据个数
-    buf      unsafe.Pointer // 队列首指针  整个chan 共用的一个数组
-    elemsize uint16  // 数据单个元素大小
-    closed   uint32 // 当前是否被关闭
-    elemtype *_type // 元素类型
-    sendx    uint   // 当前数组中的sendx 指针
-    recvx    uint   // 当前
-    recvq    waitq  // waitq 为等待线程队列
-    sendq    waitq  // 
-    lock mutex   //
-}</code></pre><p>在上面的数据结构中,我们主要关注 <strong><code>buf</code></strong>。</br><br>hchan 中的队列本质上就是我们常见的链表。<br><code>buf 则就是指向链表头部的首指针。</code></br><br>想要<code>读取链表中的某一个元素主要就是通过 buf+recv 来实现的</code></br><br>想要往<code>链表中增加一个元素主要就是通过 buf+sendq 来实现的</code></br><br><font color="red">需要注意的是:在源码中读取链表数据额和增加链表数据这些都是通过unsafe.Pointer 直接操作内存地址的</font></p>
-<h3 id="3">makechan</h3>
-    在go 中常见的创建一个chan的代码
-
-<pre><code>c := make(chan int,2)</code></pre><p>这个make 方法最后就是会触发makechan 方法<br><br>根据chan 中的数据类型和int 大小会有三种不同的处理办法。源码如下</p>
-<pre><code>switch {
-    // mem 为chan 数组元素预计占用的内存大小，比如我们在上面代码中设置了数组大小为2,我的测试机器是64位,int 占8个字节,所以mem=2*8=16
-case mem == 0:
-    c = (*hchan)(mallocgc(hchanSize, nil, true))
-    // Race detector uses this location for synchronization.
-    // 因为mem=0,此时buf 数组实际上就变成了容量为1的数组。
-    c.buf = c.raceaddr()
-    // 当chan 中的元素类型不包含指针时。上面的代码就会触发这个。
-case elem.kind&amp;kindNoPointers != 0:
-    // 为chan 申请内存。hchansize 是hchan 这个数据结构自己本身占的内存大小
-    c = (*hchan)(mallocgc(hchanSize+mem, nil, true))
-    // 初始化c.buf 让它指向指向链表头部
-    c.buf = add(unsafe.Pointer(c), hchanSize)
-default:
-    // Elements contain pointers.
-    c = new(hchan)
-    c.buf = mallocgc(mem, elem, true)
-}</code></pre><h3 id="4">chansend</h3>
-
-<pre><code>c&lt;-1</code></pre><p>和makechan 类似,上面的代码通过解析器最后触发就是这个chansend 函数。<br><br>makechan 有2种写入方式。<br><br>1: 当c.recq 的队列中存在数据时(从源码上来看,队列最多只有一个元素)</p>
-<pre><code>// 一般发生在队列容量已经满了,还在继续发送的时候
-if sg := c.recvq.dequeue(); sg != nil {
-    // Found a waiting receiver. We pass the value we want to send
-    // directly to the receiver, bypassing the channel buffer (if any).
-    send(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
-    return true
-}
-// send 函数会触发sendDirectt 函数</code></pre><p>2:当队列容量未满的时候</p>
-<pre><code>//当前队列容量未满的时候
-if c.qcount &lt; c.dataqsiz {
-    // Space is available in the channel buffer. Enqueue the element to send.
-    // 通过c.buf+sendx 获取第sendx 个元素指针的起始地址
-    qp := chanbuf(c, c.sendx)
-    // 这里无视掉
-    if raceenabled {
-        raceacquire(qp)
-        racerelease(qp)
-    }
-    // 将ep 的值复制给qp, ep 就是 c&lt;-1 中1的指针地址
-    typedmemmove(c.elemtype, qp, ep)
-    c.sendx++
-    if c.sendx == c.dataqsiz {
-        c.sendx = 0
-    }
-    c.qcount++
-    unlock(&amp;c.lock)
-    return true
-}</code></pre><p><code>值得注意的是,当c.qcount == c.dataqsiz 时。会执行以下代码。会直接让当前协程加入到等待队列之中.代码如下</code></p>
-<pre><code>gp := getg()
-mysg := acquireSudog()
-mysg.releasetime = 0
-if t0 != 0 {
-    mysg.releasetime = -1
-}
-// No stack splits between assigning elem and enqueuing mysg
-// on gp.waiting where copystack can find it.
-mysg.elem = ep
-mysg.waitlink = nil
-mysg.g = gp
-mysg.isSelect = false
-mysg.c = c
-gp.waiting = mysg
-println(&quot;chan_send 当前等待的内存地址是&quot;,mysg)
-gp.param = nil
-c.sendq.enqueue(mysg)
-// 当前线程开始陷入沉睡
-goparkunlock(&amp;c.lock, waitReasonChanSend, traceEvGoBlockSend, 3)</code></pre><h3 id="5">chanrev</h3>
-下面代码会触发这个函数
-
-<pre><code>t := &lt;-c</code></pre><p>和chansend 类似,也分2种模式</p>
-<p>1:当前sendq 队列中存在数据,也就是会chansend 中那个被加入到等待队列中的协程。</p>
-<pre><code>if sg := c.sendq.dequeue(); sg != nil {
-    println(&quot;chan_rev sg 内存地址&quot;,sg)
-    // Found a waiting sender. If buffer is size 0, receive value
-    // directly from sender. Otherwise, receive from head of queue
-    // and add sender&apos;s value to the tail of the queue (both map to
-    // the same buffer slot because the queue is full).
-    recv(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
-    return true, true
-}
-
-recv 函数如下
-qp := chanbuf(c, c.recvx)
-if raceenabled {
-    raceacquire(qp)
-    racerelease(qp)
-    raceacquireg(sg.g, qp)
-    racereleaseg(sg.g, qp)
-}
-// copy data from queue to receiver
-if ep != nil {
-    // 将qp 的值复制给ep 。这里做了我们常见的一种办法
-    typedmemmove(c.elemtype, ep, qp)
-}
-// copy data from sender to queue
-typedmemmove(c.elemtype, qp, sg.elem)
-c.recvx++
-if c.recvx == c.dataqsiz {
-    c.recvx = 0
-}
-c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">&lt;i class&#x3D;&quot;fa fa-angle-right&quot;&gt;&lt;&#x2F;i&gt;</a>
+  </nav>
+
 
 
           </div>
@@ -1717,7 +1717,7 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1739,7 +1739,7 @@ c.sendx = c.recvx // c.sendx = (c.sendx+1) % c.dataqsiz</code></pre>
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
